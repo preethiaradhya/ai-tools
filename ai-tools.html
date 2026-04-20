@@ -1,0 +1,615 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI Practice Tools — AI for ALL | ROOMAN</title>
+<style>
+  :root {
+    --primary: #1a237e;
+    --accent: #ff6f00;
+    --success: #2e7d32;
+    --bg: #f0f2f5;
+    --card: #ffffff;
+    --border: #e0e0e0;
+    --muted: #757575;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'Segoe UI', Arial, sans-serif; background: var(--bg); color: #212121; min-height: 100vh; }
+
+  /* ── HEADER ── */
+  .header {
+    background: linear-gradient(135deg, #1a237e 0%, #283593 100%);
+    color: white;
+    padding: 18px 24px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+  }
+  .header-logo { font-size: 28px; }
+  .header-title { font-size: 20px; font-weight: 700; }
+  .header-sub { font-size: 12px; opacity: 0.75; margin-top: 2px; }
+  .header-badge {
+    margin-left: auto;
+    background: var(--accent);
+    color: white;
+    font-size: 11px;
+    font-weight: 700;
+    padding: 4px 12px;
+    border-radius: 20px;
+  }
+
+  /* ── FILTER BAR ── */
+  .filter-bar {
+    background: white;
+    border-bottom: 1px solid var(--border);
+    padding: 12px 24px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+  .filter-label { font-size: 13px; font-weight: 600; color: var(--muted); }
+  .filter-btn {
+    padding: 6px 16px;
+    border-radius: 20px;
+    border: 2px solid var(--border);
+    background: white;
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    color: var(--muted);
+    transition: all 0.15s;
+  }
+  .filter-btn.active, .filter-btn:hover {
+    background: var(--primary);
+    color: white;
+    border-color: var(--primary);
+  }
+  .search-box {
+    margin-left: auto;
+    padding: 7px 14px;
+    border: 2px solid var(--border);
+    border-radius: 20px;
+    font-size: 13px;
+    outline: none;
+    width: 200px;
+    transition: border-color 0.2s;
+  }
+  .search-box:focus { border-color: var(--primary); }
+
+  /* ── STATS BAR ── */
+  .stats-bar {
+    background: linear-gradient(90deg, #e8eaf6, #fff3e0);
+    padding: 10px 24px;
+    display: flex;
+    gap: 24px;
+    align-items: center;
+    font-size: 13px;
+    flex-wrap: wrap;
+  }
+  .stat-item { display: flex; align-items: center; gap: 6px; color: #555; }
+  .stat-item strong { color: var(--primary); }
+
+  /* ── MAIN ── */
+  .main { padding: 20px 24px; max-width: 1200px; margin: 0 auto; }
+
+  /* ── SECTION HEADING ── */
+  .section-heading {
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--primary);
+    margin: 24px 0 12px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding-bottom: 8px;
+    border-bottom: 2px solid var(--border);
+  }
+  .section-count {
+    font-size: 12px;
+    font-weight: 600;
+    background: var(--primary);
+    color: white;
+    padding: 2px 8px;
+    border-radius: 10px;
+    margin-left: 4px;
+  }
+
+  /* ── TOOLS GRID ── */
+  .tools-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: 16px;
+    margin-bottom: 8px;
+  }
+
+  /* ── TOOL CARD ── */
+  .tool-card {
+    background: white;
+    border-radius: 14px;
+    padding: 22px 18px 18px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.07);
+    cursor: pointer;
+    transition: transform 0.2s, box-shadow 0.2s;
+    border: 2px solid transparent;
+    text-decoration: none;
+    color: inherit;
+    display: block;
+    position: relative;
+    overflow: hidden;
+  }
+  .tool-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 4px;
+  }
+  .tool-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 28px rgba(0,0,0,0.15);
+    border-color: var(--primary);
+  }
+  .tool-card.featured { border-color: #ffd700; box-shadow: 0 2px 8px rgba(255,215,0,0.3); }
+  .tool-card.featured::before { background: linear-gradient(90deg, #ffd700, #ff6f00); }
+  .tool-card.indian::before { background: linear-gradient(90deg, #ff9933, #138808); }
+  .tool-card.writing::before { background: linear-gradient(90deg, #1565c0, #42a5f5); }
+  .tool-card.image::before { background: linear-gradient(90deg, #6a1b9a, #ce93d8); }
+  .tool-card.code::before { background: linear-gradient(90deg, #1b5e20, #66bb6a); }
+  .tool-card.search::before { background: linear-gradient(90deg, #e65100, #ffb74d); }
+  .tool-card.video::before { background: linear-gradient(90deg, #c62828, #ef9a9a); }
+  .tool-card.audio::before { background: linear-gradient(90deg, #4a148c, #b39ddb); }
+  .tool-card.productivity::before { background: linear-gradient(90deg, #0d47a1, #90caf9); }
+
+  .tool-icon { font-size: 38px; margin-bottom: 12px; display: block; }
+  .tool-name { font-size: 15px; font-weight: 700; color: var(--primary); margin-bottom: 4px; }
+  .tool-tag {
+    display: inline-block;
+    font-size: 10px;
+    font-weight: 700;
+    padding: 2px 8px;
+    border-radius: 8px;
+    margin-bottom: 8px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+  .tag-free { background: #e8f5e9; color: #2e7d32; }
+  .tag-freemium { background: #fff3e0; color: #e65100; }
+  .tag-paid { background: #fce4ec; color: #c62828; }
+  .tag-india { background: #e8eaf6; color: #1a237e; }
+  .tool-desc { font-size: 12px; color: var(--muted); line-height: 1.6; margin-bottom: 14px; }
+  .tool-use {
+    font-size: 11px;
+    font-weight: 700;
+    color: #555;
+    background: #f5f5f5;
+    padding: 4px 10px;
+    border-radius: 6px;
+    margin-bottom: 12px;
+    display: inline-block;
+  }
+  .tool-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    padding: 9px 0;
+    background: var(--primary);
+    color: white;
+    border-radius: 8px;
+    font-size: 13px;
+    font-weight: 700;
+    width: 100%;
+    border: none;
+    cursor: pointer;
+    transition: background 0.2s;
+    text-decoration: none;
+  }
+  .tool-btn:hover { background: #283593; }
+  .tool-btn.accent { background: var(--accent); }
+  .tool-btn.accent:hover { background: #e65100; }
+  .tool-btn.success { background: var(--success); }
+  .tool-btn.success:hover { background: #1b5e20; }
+
+  /* ── FEATURED BADGE ── */
+  .featured-badge {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    background: #ffd700;
+    color: #333;
+    font-size: 10px;
+    font-weight: 800;
+    padding: 2px 8px;
+    border-radius: 8px;
+  }
+
+  /* ── EXERCISE BOX ── */
+  .exercise-section {
+    background: linear-gradient(135deg, #e8eaf6, #fff3e0);
+    border-radius: 14px;
+    padding: 24px;
+    margin: 24px 0;
+    border: 2px solid #c5cae9;
+  }
+  .exercise-title { font-size: 16px; font-weight: 700; color: var(--primary); margin-bottom: 12px; }
+  .exercise-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 12px; }
+  .exercise-card {
+    background: white;
+    border-radius: 10px;
+    padding: 14px;
+    border-left: 4px solid var(--accent);
+  }
+  .exercise-num { font-size: 11px; font-weight: 700; color: var(--accent); margin-bottom: 4px; text-transform: uppercase; }
+  .exercise-text { font-size: 13px; color: #424242; line-height: 1.6; }
+
+  /* ── TIP BOX ── */
+  .tip-box {
+    background: #fff8e1;
+    border-left: 4px solid var(--accent);
+    padding: 14px 18px;
+    border-radius: 0 10px 10px 0;
+    margin: 16px 0;
+    font-size: 13px;
+    line-height: 1.7;
+    color: #555;
+  }
+  .tip-box strong { color: var(--accent); }
+
+  /* ── HIDDEN ── */
+  .tool-card.hidden { display: none; }
+
+  /* ── TOAST ── */
+  .toast {
+    position: fixed;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%) translateY(80px);
+    background: #333;
+    color: white;
+    padding: 12px 24px;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 600;
+    transition: transform 0.3s;
+    z-index: 999;
+    box-shadow: 0 4px 16px rgba(0,0,0,0.3);
+  }
+  .toast.show { transform: translateX(-50%) translateY(0); }
+  .toast.success { background: var(--success); }
+
+  @media(max-width: 600px) {
+    .tools-grid { grid-template-columns: 1fr 1fr; }
+    .search-box { width: 100%; margin-left: 0; }
+    .header-badge { display: none; }
+  }
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<div class="header">
+  <div class="header-logo">🛠️</div>
+  <div>
+    <div class="header-title">AI Practice Tools</div>
+    <div class="header-sub">AI for ALL — ROOMAN Technologies | Try real AI tools</div>
+  </div>
+  <div class="header-badge">INTERACTIVE RESOURCE</div>
+</div>
+
+<!-- FILTER BAR -->
+<div class="filter-bar">
+  <span class="filter-label">Filter:</span>
+  <button class="filter-btn active" onclick="filterTools('all', this)">All Tools</button>
+  <button class="filter-btn" onclick="filterTools('chat', this)">💬 Chat AI</button>
+  <button class="filter-btn" onclick="filterTools('image', this)">🖼️ Image AI</button>
+  <button class="filter-btn" onclick="filterTools('code', this)">💻 Code AI</button>
+  <button class="filter-btn" onclick="filterTools('indian', this)">🇮🇳 Made in India</button>
+  <button class="filter-btn" onclick="filterTools('free', this)">🆓 Free Tools</button>
+  <input class="search-box" type="text" placeholder="🔍 Search tools..." oninput="searchTools(this.value)">
+</div>
+
+<!-- STATS BAR -->
+<div class="stats-bar">
+  <div class="stat-item">🛠️ <strong>18</strong> AI tools curated for you</div>
+  <div class="stat-item">🆓 <strong>12</strong> completely free</div>
+  <div class="stat-item">🇮🇳 <strong>4</strong> Indian tools</div>
+  <div class="stat-item">💡 Click any card to open the tool in a new tab</div>
+</div>
+
+<!-- MAIN CONTENT -->
+<div class="main">
+
+  <!-- TIP -->
+  <div class="tip-box">
+    <strong>💡 How to use this page:</strong> Open a tool, try the exercise suggested for that tool, then come back and try the next one. Each tool takes only 5–10 minutes to explore. You don't need to create accounts for most of these to get started.
+  </div>
+
+  <!-- SECTION: CHAT AI -->
+  <div class="section-heading">
+    💬 Conversational AI Tools
+    <span class="section-count">5</span>
+  </div>
+  <div class="tools-grid">
+
+    <div class="tool-card featured" data-cat="chat free">
+      <div class="featured-badge">⭐ Best to Start</div>
+      <span class="tool-icon">🤖</span>
+      <div class="tool-name">ChatGPT</div>
+      <span class="tool-tag tag-freemium">Freemium</span>
+      <div class="tool-desc">OpenAI's flagship AI. Best for writing, explaining concepts, coding help, and creative tasks. The most widely used AI tool in the world.</div>
+      <div class="tool-use">📝 Best for: Writing, Explanations, Code</div>
+      <a class="tool-btn" href="https://chat.openai.com" target="_blank" onclick="track('ChatGPT')">Open ChatGPT →</a>
+    </div>
+
+    <div class="tool-card featured" data-cat="chat free">
+      <div class="featured-badge">⭐ Recommended</div>
+      <span class="tool-icon">✨</span>
+      <div class="tool-name">Google Gemini</div>
+      <span class="tool-tag tag-free">Free</span>
+      <div class="tool-desc">Google's AI with internet access and multimodal capabilities. Excellent for research, image understanding, and real-time information.</div>
+      <div class="tool-use">📝 Best for: Research, Current Events</div>
+      <a class="tool-btn accent" href="https://gemini.google.com" target="_blank" onclick="track('Gemini')">Open Gemini →</a>
+    </div>
+
+    <div class="tool-card" data-cat="chat free">
+      <span class="tool-icon">🧠</span>
+      <div class="tool-name">Claude (Anthropic)</div>
+      <span class="tool-tag tag-free">Free</span>
+      <div class="tool-desc">Excellent for long documents, analysis, and thoughtful writing. Claude is known for safety and nuanced reasoning.</div>
+      <div class="tool-use">📝 Best for: Analysis, Long Documents</div>
+      <a class="tool-btn" href="https://claude.ai" target="_blank" onclick="track('Claude')">Open Claude →</a>
+    </div>
+
+    <div class="tool-card" data-cat="chat free">
+      <span class="tool-icon">🪟</span>
+      <div class="tool-name">Microsoft Copilot</div>
+      <span class="tool-tag tag-free">Free</span>
+      <div class="tool-desc">AI integrated with Microsoft 365. Integrated into Word, Excel, Teams. Uses GPT-4 with Bing web search built in.</div>
+      <div class="tool-use">📝 Best for: Office Work, Web Search</div>
+      <a class="tool-btn" href="https://copilot.microsoft.com" target="_blank" onclick="track('Copilot')">Open Copilot →</a>
+    </div>
+
+    <div class="tool-card search" data-cat="chat search free">
+      <span class="tool-icon">🔍</span>
+      <div class="tool-name">Perplexity AI</div>
+      <span class="tool-tag tag-free">Free</span>
+      <div class="tool-desc">AI-powered search engine that gives answers with citations. Great for fact-checking and research with sources you can verify.</div>
+      <div class="tool-use">📝 Best for: Research with Sources</div>
+      <a class="tool-btn success" href="https://www.perplexity.ai" target="_blank" onclick="track('Perplexity')">Open Perplexity →</a>
+    </div>
+
+  </div>
+
+  <!-- SECTION: IMAGE AI -->
+  <div class="section-heading">
+    🖼️ Image Generation Tools
+    <span class="section-count">4</span>
+  </div>
+  <div class="tools-grid">
+
+    <div class="tool-card image" data-cat="image free">
+      <span class="tool-icon">🎨</span>
+      <div class="tool-name">Canva AI</div>
+      <span class="tool-tag tag-freemium">Freemium</span>
+      <div class="tool-desc">Create stunning designs, presentations, and AI-generated images. Easiest AI image tool for beginners — drag and drop.</div>
+      <div class="tool-use">📝 Best for: Posters, Presentations</div>
+      <a class="tool-btn" href="https://www.canva.com/ai-image-generator/" target="_blank" onclick="track('Canva AI')">Open Canva →</a>
+    </div>
+
+    <div class="tool-card image" data-cat="image">
+      <span class="tool-icon">🖼️</span>
+      <div class="tool-name">DALL-E (ChatGPT)</div>
+      <span class="tool-tag tag-freemium">Freemium</span>
+      <div class="tool-desc">Generate photorealistic images from text descriptions. Type what you imagine and AI draws it. Part of ChatGPT Plus.</div>
+      <div class="tool-use">📝 Best for: Creative Images</div>
+      <a class="tool-btn" href="https://chatgpt.com/?hints=dalle" target="_blank" onclick="track('DALL-E')">Open DALL-E →</a>
+    </div>
+
+    <div class="tool-card image" data-cat="image free">
+      <span class="tool-icon">🌟</span>
+      <div class="tool-name">Adobe Firefly</div>
+      <span class="tool-tag tag-free">Free</span>
+      <div class="tool-desc">Adobe's AI image generator. Commercially safe images trained on licensed content. Free tier available with account.</div>
+      <div class="tool-use">📝 Best for: Professional Images</div>
+      <a class="tool-btn" href="https://firefly.adobe.com" target="_blank" onclick="track('Adobe Firefly')">Open Firefly →</a>
+    </div>
+
+    <div class="tool-card image" data-cat="image free">
+      <span class="tool-icon">🎭</span>
+      <div class="tool-name">Microsoft Designer</div>
+      <span class="tool-tag tag-free">Free</span>
+      <div class="tool-desc">Free AI image and design tool from Microsoft. Great for social media posts, flyers, and presentations. No design skills needed.</div>
+      <div class="tool-use">📝 Best for: Social Media, Flyers</div>
+      <a class="tool-btn" href="https://designer.microsoft.com" target="_blank" onclick="track('MS Designer')">Open Designer →</a>
+    </div>
+
+  </div>
+
+  <!-- SECTION: CODE AI -->
+  <div class="section-heading">
+    💻 Code & Developer AI Tools
+    <span class="section-count">3</span>
+  </div>
+  <div class="tools-grid">
+
+    <div class="tool-card code" data-cat="code free">
+      <span class="tool-icon">👨‍💻</span>
+      <div class="tool-name">GitHub Copilot</div>
+      <span class="tool-tag tag-freemium">Free for Students</span>
+      <div class="tool-desc">AI pair programmer that suggests code as you type. Used by millions of developers worldwide. Free with GitHub Student Pack.</div>
+      <div class="tool-use">📝 Best for: Coding, Programming</div>
+      <a class="tool-btn success" href="https://github.com/features/copilot" target="_blank" onclick="track('GitHub Copilot')">Explore Copilot →</a>
+    </div>
+
+    <div class="tool-card code" data-cat="code free">
+      <span class="tool-icon">🐍</span>
+      <div class="tool-name">Programiz (Python)</div>
+      <span class="tool-tag tag-free">Free</span>
+      <div class="tool-desc">Run Python code directly in your browser — no installation needed. Perfect for beginners learning to code with AI.</div>
+      <div class="tool-use">📝 Best for: Learning Python</div>
+      <a class="tool-btn" href="https://www.programiz.com/python-programming/online-compiler/" target="_blank" onclick="track('Programiz')">Open Python IDE →</a>
+    </div>
+
+    <div class="tool-card code" data-cat="code free">
+      <span class="tool-icon">⚡</span>
+      <div class="tool-name">Replit AI</div>
+      <span class="tool-tag tag-freemium">Freemium</span>
+      <div class="tool-desc">Online coding environment with AI that helps you write, debug, and explain code. Supports 50+ programming languages.</div>
+      <div class="tool-use">📝 Best for: Full Projects</div>
+      <a class="tool-btn" href="https://replit.com" target="_blank" onclick="track('Replit')">Open Replit →</a>
+    </div>
+
+  </div>
+
+  <!-- SECTION: MADE IN INDIA -->
+  <div class="section-heading">
+    🇮🇳 Made in India AI Tools
+    <span class="section-count">4</span>
+  </div>
+  <div class="tools-grid">
+
+    <div class="tool-card indian" data-cat="indian free">
+      <span class="tool-icon">🇮🇳</span>
+      <div class="tool-name">Bhashini</div>
+      <span class="tool-tag tag-free">Free</span>
+      <div class="tool-desc">India's national AI translation platform. Translate text and speech across 22+ Indian languages including Kannada, Telugu, Hindi, Tamil.</div>
+      <div class="tool-use">📝 Best for: Language Translation</div>
+      <a class="tool-btn" style="background:#138808;" href="https://bhashini.gov.in" target="_blank" onclick="track('Bhashini')">Open Bhashini →</a>
+    </div>
+
+    <div class="tool-card indian" data-cat="indian free">
+      <span class="tool-icon">🏥</span>
+      <div class="tool-name">Practo AI</div>
+      <span class="tool-tag tag-free">Free</span>
+      <div class="tool-desc">India's leading health AI platform. AI-powered doctor consultations, symptom checker, and health records — tailored for Indian users.</div>
+      <div class="tool-use">📝 Best for: Health Queries</div>
+      <a class="tool-btn" style="background:#00b5ad;" href="https://www.practo.com" target="_blank" onclick="track('Practo')">Open Practo →</a>
+    </div>
+
+    <div class="tool-card indian" data-cat="indian free">
+      <span class="tool-icon">📚</span>
+      <div class="tool-name">NPTEL AI Courses</div>
+      <span class="tool-tag tag-free">Free</span>
+      <div class="tool-desc">Government of India's free online courses including AI, ML, and Data Science taught by IIT professors. Certificates available.</div>
+      <div class="tool-use">📝 Best for: Free AI Certification</div>
+      <a class="tool-btn" style="background:#6a1b9a;" href="https://nptel.ac.in" target="_blank" onclick="track('NPTEL')">Open NPTEL →</a>
+    </div>
+
+    <div class="tool-card indian" data-cat="indian free">
+      <span class="tool-icon">🤝</span>
+      <div class="tool-name">Jugalbandi (MSDF)</div>
+      <span class="tool-tag tag-free">Free</span>
+      <div class="tool-desc">AI-powered government scheme navigator by Microsoft & Karya. Helps citizens in rural India discover schemes they're eligible for — in their language.</div>
+      <div class="tool-use">📝 Best for: Government Schemes</div>
+      <a class="tool-btn" style="background:#0078d4;" href="https://jugalbandi.ai" target="_blank" onclick="track('Jugalbandi')">Explore →</a>
+    </div>
+
+  </div>
+
+  <!-- SECTION: AUDIO & VIDEO -->
+  <div class="section-heading">
+    🔊 Audio, Video & Other AI Tools
+    <span class="section-count">2</span>
+  </div>
+  <div class="tools-grid">
+
+    <div class="tool-card audio" data-cat="audio free">
+      <span class="tool-icon">🔊</span>
+      <div class="tool-name">ElevenLabs</div>
+      <span class="tool-tag tag-freemium">Freemium</span>
+      <div class="tool-desc">Convert any text to natural-sounding speech in 29 languages. Create voice-overs for videos, podcasts, or educational content.</div>
+      <div class="tool-use">📝 Best for: Voice, Audio Content</div>
+      <a class="tool-btn" href="https://elevenlabs.io" target="_blank" onclick="track('ElevenLabs')">Open ElevenLabs →</a>
+    </div>
+
+    <div class="tool-card video" data-cat="video">
+      <span class="tool-icon">🎬</span>
+      <div class="tool-name">Runway ML</div>
+      <span class="tool-tag tag-freemium">Freemium</span>
+      <div class="tool-desc">Generate and edit videos using AI. Create professional videos from text prompts. The future of video creation is here.</div>
+      <div class="tool-use">📝 Best for: AI Video Generation</div>
+      <a class="tool-btn" href="https://runwayml.com" target="_blank" onclick="track('Runway')">Open Runway →</a>
+    </div>
+
+  </div>
+
+  <!-- PRACTICE EXERCISES -->
+  <div class="exercise-section">
+    <div class="exercise-title">🎯 Quick Practice Exercises — Try These Right Now!</div>
+    <div class="exercise-grid">
+      <div class="exercise-card">
+        <div class="exercise-num">Exercise 1 — ChatGPT</div>
+        <div class="exercise-text">Open ChatGPT and type: <em>"Explain artificial intelligence to a 10th grade student in India using examples from cricket and farming."</em> See how detailed the answer is.</div>
+      </div>
+      <div class="exercise-card">
+        <div class="exercise-num">Exercise 2 — Gemini</div>
+        <div class="exercise-text">Open Gemini and ask: <em>"What are the top 5 AI jobs in India in 2025 and what skills do they need?"</em> Notice how it uses current web information.</div>
+      </div>
+      <div class="exercise-card">
+        <div class="exercise-num">Exercise 3 — Canva AI</div>
+        <div class="exercise-text">Open Canva AI Image Generator and type: <em>"A student in South India learning technology on a laptop, bright colors, inspirational"</em> — see what it creates!</div>
+      </div>
+      <div class="exercise-card">
+        <div class="exercise-num">Exercise 4 — Bhashini</div>
+        <div class="exercise-text">Open Bhashini and translate this sentence to your regional language: <em>"Artificial Intelligence is changing the world and creating new opportunities for everyone."</em></div>
+      </div>
+      <div class="exercise-card">
+        <div class="exercise-num">Exercise 5 — Programiz</div>
+        <div class="exercise-text">Open Programiz Python IDE and type: <em>print("Hello, I am learning AI for ALL at ROOMAN!")</em> and click Run. You just ran your first Python code!</div>
+      </div>
+      <div class="exercise-card">
+        <div class="exercise-num">Exercise 6 — Compare Two Tools</div>
+        <div class="exercise-text">Ask the same question in both ChatGPT and Claude: <em>"What are 3 ways AI can help small businesses in Tier 2 cities of India?"</em> Compare their answers.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- BOTTOM TIP -->
+  <div class="tip-box" style="margin-bottom:24px;">
+    <strong>🏆 Challenge:</strong> Try at least 3 tools from this page this week. For each tool, write 2–3 sentences about what it does well and what it doesn't do well. This comparison is your Module 2 assignment!
+  </div>
+
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+function filterTools(cat, btn) {
+  document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  document.querySelectorAll('.tool-card').forEach(card => {
+    if (cat === 'all') {
+      card.classList.remove('hidden');
+    } else {
+      const cats = (card.dataset.cat || '').split(' ');
+      card.classList.toggle('hidden', !cats.includes(cat));
+    }
+  });
+}
+
+function searchTools(query) {
+  const q = query.toLowerCase();
+  document.querySelectorAll('.tool-card').forEach(card => {
+    const text = card.textContent.toLowerCase();
+    card.classList.toggle('hidden', q.length > 0 && !text.includes(q));
+  });
+  if (q) {
+    document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+  }
+}
+
+function track(name) {
+  showToast('Opening ' + name + '! 🚀 Come back after exploring it.', 'success');
+}
+
+function showToast(msg, type = '') {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.className = 'toast show' + (type ? ' ' + type : '');
+  setTimeout(() => { t.className = 'toast' + (type ? ' ' + type : ''); }, 2800);
+}
+</script>
+</body>
+</html>
